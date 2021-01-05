@@ -1,0 +1,35 @@
+exp:
+  path: deeplabv2/poly_scheduler
+  checkpoint_dir: checkpoint
+  tensorboard_dir: runs
+  preds: preds
+  crf: pred_crf
+  results: results
+  logits: logits
+  init_weights: weights/deeplabv1_resnet101-coco.pth
+  final_weights: deeplabv2_resnet101_final.pth
+
+dataset:
+  root_dir: /home/rlx/VOCdevkit/VOC2012
+  txt_dir: dataset/voc
+  n_classes: 21
+  crop_size: 321
+  ignore_label: 255
+  mean_bgr: [104.008, 116.669, 122.675]
+  
+
+train:
+  split: train_aug
+  batch_size: 10 # 20 for step scheduler
+  max_iters: 40000 # 6000 for step scheduler
+  update_iters: 4000
+  num_workers: 4
+  scales: [0.5, 0.75, 1.0, 1.25, 1.5]
+  opt:
+    learning_rate: 1e-3
+    weight_decay: 5e-4
+    momentum: 0.9
+    power: 0.9
+
+val:
+  split: val
