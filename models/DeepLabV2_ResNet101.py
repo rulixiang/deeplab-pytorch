@@ -74,10 +74,10 @@ class Stem(nn.Sequential):
         self.add_module("relu1", nn.ReLU(inplace=True))
         self.add_module("pool", nn.MaxPool2d(3, 2, 1, ceil_mode=True))
 
-class ResNet101(nn.Sequential):
+class ResNet(nn.Sequential):
 
     def __init__(self, n_classes, n_blocks):
-        super(ResNet101, self).__init__()
+        super(ResNet, self).__init__()
         planes = [64 * 2 ** i for i in range(6)]
         self.add_module('layer1', Stem(planes[0]))
         self.add_module('layer2', _make_layer(blocks=n_blocks[0], in_planes=planes[0],out_planes=planes[2], stride=1, dilation=1))
@@ -86,7 +86,7 @@ class ResNet101(nn.Sequential):
         self.add_module('layer5', _make_layer(blocks=n_blocks[3], in_planes=planes[4],out_planes=planes[5], stride=2, dilation=1))
 
 if __name__ == "__main__":
-    model = ResNet101(n_classes=1000, n_blocks=[3, 4, 23, 3])
+    model = ResNet(n_classes=1000, n_blocks=[3, 4, 23, 3])
     model.eval()
     image = torch.randn(1, 3, 224, 224)
 
