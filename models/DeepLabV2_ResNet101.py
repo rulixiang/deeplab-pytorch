@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules.batchnorm import BatchNorm2d
 
 expansion = 4
 
@@ -14,7 +15,7 @@ class ConvBN(nn.Module):
         if batch_norm is None:
             self.batch_norm = nn.BatchNorm2d(out_planes, eps=1e-5, momentum=1e-3)
             #self.batch_norm = nn.SyncBatchNorm(out_planes, eps=1e-5, momentum=1e-3)
-
+            
     def forward(self, x):
         x = self.conv(x)
         x = self.batch_norm(x)
@@ -85,10 +86,48 @@ class ResNet(nn.Sequential):
         self.add_module('layer4', _make_layer(blocks=n_blocks[2], in_planes=planes[3],out_planes=planes[4], stride=2, dilation=1))
         self.add_module('layer5', _make_layer(blocks=n_blocks[3], in_planes=planes[4],out_planes=planes[5], stride=2, dilation=1))
 
+class ASPP(nn.Module):
+    def __init__(self, in_planes, out_planes, atrous_rates):
+        super(ASPP, self).__init__()
+        for i, rate in enumerate(atrous_rates):
+            self.add_module("c%d"%(i), nn.Conv2d(in_planes, out_planes, 3, 1, padding=rate, dilation=rate, bias=True))
+        self._init_weights()
+
+    def _init_weights(self):
+        for m in self.modules():
+            #print(m)
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                nn.init.constant_(m.bias, 0.0)
+        return None
+    def forward(self, x):
+        return sum([stage(x) for stage in self.children()])
+
+class DeepLabV2_ResNet101(nn.Sequential):
+    def __init__(self, n_classes, n_blocks, atrous_rates):
+        super(DeepLabV2_ResNet101, self).__init__()
+        planes = [64 * 2 ** i for i in range(6)]
+
+        self.add_module('layer1', Stem(planes[0]))
+        self.add_module('layer2', _make_layer(blocks=n_blocks[0], in_planes=planes[0],out_planes=planes[2], stride=1, dilation=1))
+        self.add_module('layer3', _make_layer(blocks=n_blocks[1], in_planes=planes[2],out_planes=planes[3], stride=2, dilation=1))
+        self.add_module('layer4', _make_layer(blocks=n_blocks[2], in_planes=planes[3],out_planes=planes[4], stride=1, dilation=2))
+        self.add_module('layer5', _make_layer(blocks=n_blocks[3], in_planes=planes[4],out_planes=planes[5], stride=1, dilation=4))
+        self.add_module('aspp', ASPP(in_planes=planes[5], out_planes=n_classes, atrous_rates=atrous_rates))
+        #self.freeze_bn()
+
+    def freeze_bn(self):
+        ## waht's this?
+        for m in self.modules():
+            #print(m)
+            if isinstance(m, BatchNorm2d):
+                m.eval()
+
 if __name__ == "__main__":
-    model = ResNet(n_classes=1000, n_blocks=[3, 4, 23, 3])
+    #dd = ASPP(2,2,[1,2,3])
+    model = DeepLabV2_ResNet101(n_classes=21, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
     model.eval()
-    image = torch.randn(1, 3, 224, 224)
+    image = torch.randn(1, 3, 321, 321)
 
     print(model)
     print("input:", image.shape)
