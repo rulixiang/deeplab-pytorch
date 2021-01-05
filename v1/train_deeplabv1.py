@@ -124,15 +124,16 @@ def train(config=None):
 
     # build and initialize model
     model = DeepLabV1_LargeFOV.DeepLabV1_LargeFOV(n_classes=config.dataset.n_classes)
-    pretrained_dict = torch.load(config.exp.init_weights)
-    new_keys = list(model.state_dict().keys())
-    new_state_dict = OrderedDict()
 
     # save model to tensorboard 
     writer_path = os.path.join(config.exp.path, config.exp.tensorboard_dir, TIMESTAMP)
     writer = SummaryWriter(writer_path)
     dummy_input = torch.rand(2, 3, 321, 321)
     writer.add_graph(model, dummy_input)
+    #  load initial weights
+    pretrained_dict = torch.load(config.exp.init_weights)
+    new_keys = list(model.state_dict().keys())
+    new_state_dict = OrderedDict()
 
     for idx, item in enumerate(pretrained_dict.items()):
         #print(" %s  <=======  %s"%(new_keys[idx].ljust(20,' '), item[0].ljust(24, ' ')))
