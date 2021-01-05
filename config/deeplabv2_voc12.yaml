@@ -16,7 +16,6 @@ dataset:
   crop_size: 321
   ignore_label: 255
   mean_bgr: [104.008, 116.669, 122.675]
-  
 
 train:
   split: train_aug

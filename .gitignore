@@ -2,6 +2,7 @@
 weights
 deeplabv1/preds
 deeplabv1/*/runs
+*/runs
 *.pyc
 *.pth
 *.npy

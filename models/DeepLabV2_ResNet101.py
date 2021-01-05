@@ -73,7 +73,7 @@ class Stem(nn.Sequential):
     """
     def __init__(self, out_planes):
         super(Stem, self).__init__()
-        self.add_module("conv1", ConvBN(in_planes=3, out_planes=out_planes, kernel_size=7, stride=2, padding=3, dilation=1))
+        self.add_module("conv7x7", ConvBN(in_planes=3, out_planes=out_planes, kernel_size=7, stride=2, padding=3, dilation=1))
         self.add_module("relu1", nn.ReLU(inplace=True))
         self.add_module("pool", nn.MaxPool2d(3, 2, 1, ceil_mode=True))
 
