@@ -1,0 +1,7 @@
+.git
+weights
+deeplabv1/preds
+*.pyc
+*.pth
+*.npy
+*.png
