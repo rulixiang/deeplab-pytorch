@@ -1,7 +1,7 @@
+from collections import OrderedDict
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.nn.modules.batchnorm import BatchNorm2d
 
 expansion = 4
 
@@ -55,14 +55,16 @@ class Bottleneck(nn.Module):
 
 def _make_layer(blocks, in_planes, out_planes, stride, dilation):
 
-    layers = []
+    layers = OrderedDict()
 
-    layers.append(Bottleneck(in_planes=in_planes, out_planes=out_planes, stride=stride, dilation=dilation, downsample=True))
+    #layers.append(Bottleneck(in_planes=in_planes, out_planes=out_planes, stride=stride, dilation=dilation, downsample=True))
+    layers['block1'] = Bottleneck(in_planes=in_planes, out_planes=out_planes, stride=stride, dilation=dilation, downsample=True)
 
-    for _ in range(1, blocks):
-        layers.append(Bottleneck(in_planes=out_planes, out_planes=out_planes, stride=1, dilation=dilation, downsample=False))
+    for i in range(1, blocks):
+        #layers.append(Bottleneck(in_planes=out_planes, out_planes=out_planes, stride=1, dilation=dilation, downsample=False))
+        layers['block%d'%(i+1)] = Bottleneck(in_planes=out_planes, out_planes=out_planes, stride=1, dilation=dilation, downsample=False)
 
-    return nn.Sequential(*layers)
+    return nn.Sequential(layers)
 
 class Stem(nn.Sequential):
     """
@@ -120,14 +122,14 @@ class DeepLabV2_ResNet101(nn.Sequential):
         ## waht's this?
         for m in self.modules():
             #print(m)
-            if isinstance(m, BatchNorm2d):
+            if isinstance(m, nn.BatchNorm2d):
                 m.eval()
 
 if __name__ == "__main__":
     #dd = ASPP(2,2,[1,2,3])
     model = DeepLabV2_ResNet101(n_classes=21, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
     model.eval()
-    image = torch.randn(1, 3, 321, 321)
+    image = torch.randn(1, 3, 513, 513)
 
     print(model)
     print("input:", image.shape)
