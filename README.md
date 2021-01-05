@@ -50,6 +50,8 @@ The ```root_dir``` in the ```.yaml``` files under directory ```config``` should 
   - [x] test
   - [x] crf
 - [ ] [DeepLabV2-ResNet101](#DeepLabV2)
+  - [x] train
+  - [ ] test
 - [ ] [DeepLabV3](#DeepLabV3)
 - [ ] [DeepLabV3+](#DeepLabV3+)
 
