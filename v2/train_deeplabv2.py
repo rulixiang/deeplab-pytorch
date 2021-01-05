@@ -143,7 +143,7 @@ def train(config=None):
             prev_key = prev_key.replace('conv3', 'increase')
             prev_key = prev_key.replace('conv2', 'conv3x3')
             prev_key = prev_key.replace('conv7x7', 'conv1')
-            print(" %s  <=======  %s"%(item.ljust(56,' '), prev_key.ljust(24, ' ')))
+            #print(" %s  <=======  %s"%(item.ljust(56,' '), prev_key.ljust(24, ' ')))
             new_state_dict[item] = pretrained_dict[prev_key]
 
     model.load_state_dict(new_state_dict,strict=False)
@@ -158,11 +158,6 @@ def train(config=None):
                 "params": get_params(model, key="1x"),
                 "lr": config.train.opt.learning_rate,
                 "weight_decay": config.train.opt.weight_decay,
-            },
-            {
-                "params": get_params(model, key="2x"),
-                "lr": 2 * config.train.opt.learning_rate,
-                "weight_decay": 0,
             },
             {
                 "params": get_params(model, key="10x"),
