@@ -1,6 +1,7 @@
 .git
 weights
 deeplabv1/preds
+deeplabv1/*/runs
 *.pyc
 *.pth
 *.npy
