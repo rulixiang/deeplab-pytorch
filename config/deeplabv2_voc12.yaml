@@ -1,5 +1,5 @@
 exp:
-  path: deeplabv2/poly_scheduler
+  path: deeplabv2
   checkpoint_dir: checkpoint
   tensorboard_dir: runs
   preds: preds
