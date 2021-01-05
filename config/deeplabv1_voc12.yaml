@@ -10,7 +10,7 @@ exp:
   final_weights: deeplabv1_vgg16_final.pth
 
 dataset:
-  root_dir: /data/users/rulixiang/VOCdevkit/VOC2012
+  root_dir: /home/rulixiang/VOCdevkit/VOC2012
   txt_dir: dataset/voc
   n_classes: 21
   crop_size: 321
