@@ -40,13 +40,16 @@ def random_rot(image, mask):
 
     return image, mask
 
-def random_crop(image, mask, crop_size,):
+def random_crop(image, mask, crop_size, mean_bgr):
 
     h, w = mask.shape
     H = max(crop_size, h)
     W = max(crop_size, w)
     pad_image = np.zeros((H,W,3), dtype=np.float32)
     pad_mask = np.ones((H,W), dtype=np.float32)*255
+    pad_image[:,:,0] = mean_bgr[0]
+    pad_image[:,:,1] = mean_bgr[1]
+    pad_image[:,:,2] = mean_bgr[2]
     
     H_pad = int(np.floor(H-h))
     W_pad = int(np.floor(W-w))

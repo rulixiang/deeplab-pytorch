@@ -29,9 +29,7 @@ class VOCSegmentationDataset(Dataset):
         self.crop_size = crop_size
         self.scales = scales
         self.mean_bgr = mean_bgr
-        self.img_transforms = transforms.Compose([
-            transforms.ToTensor(),
-        ])
+        #self.img_transforms = transforms.Compose([transforms.ToTensor(),])
 
     def __len__(self):
         return len(self.name_list)
@@ -41,49 +39,44 @@ class VOCSegmentationDataset(Dataset):
         image_path = os.path.join(self.root_dir, 'JPEGImages', self.name_list[idx]+'.jpg')
         mask_path = os.path.join(self.root_dir, 'SegmentationClassAug', self.name_list[idx]+'.png')
 
-        image = cv2.imread(image_path, cv2.IMREAD_COLOR).astype(np.float32)
+        image = misc.imread(image_path).astype(np.float32)
+        # convert to bgr
+        image = image[:,:,[2,1,0]]
 
         if self.stage is 'train':
-            #image = cv2.imread(image_path, cv2.IMREAD_COLOR)#.astype(np.float32)
+
             mask = misc.imread(mask_path)
-
             image, mask = self.joint_transforms(image, mask)
-
-            image = image - self.mean_bgr
-            image = self.img_transforms(image).float()
-
-            return self.name_list[idx], image, mask
 
         elif self.stage is 'val':
             #image = cv2.imread(image_path, cv2.IMREAD_COLOR).astype(np.float32)
             mask = misc.imread(mask_path).astype(np.float32)
 
-            image = image - self.mean_bgr
-            image = self.img_transforms(image).float()
-            
-            return self.name_list[idx], image, mask
-
         elif self.stage is 'test':
-            
-            image = image - self.mean_bgr
-            image = self.img_transforms(image).float()
+
             mask = None
-            return self.name_list[idx], image, mask
+
+        image[:,:,0] = image[:,:,0] - self.mean_bgr[0]
+        image[:,:,1] = image[:,:,1] - self.mean_bgr[1]
+        image[:,:,2] = image[:,:,2] - self.mean_bgr[2]
+        image = image.transpose([2,0,1])
+
+        return self.name_list[idx], image, mask
         
     def joint_transforms(self, image, mask):
 
         image, mask = imutils.random_scaling(image, mask, scales=self.scales)
         #image, mask = imutils.random_flipud(image, mask)
         image, mask = imutils.random_fliplr(image, mask)
-        image, mask = imutils.random_crop(image, mask, crop_size=self.crop_size)
+        image, mask = imutils.random_crop(image, mask, crop_size=self.crop_size, mean_bgr=self.mean_bgr)
         #image, mask = imutils.random_rot(image, mask)
         
         return image, mask
 
 if __name__ == "__main__":
-    root_dir = '/data/users/rulixiang/VOCdevkit/VOC2012'
-    txt_file = '/data/users/rulixiang/deeplab-pytorch/dataset/voc/train.txt'
-    voc12dataset = VOCSegmentationDataset(root_dir, txt_dir = 'dataset/voc', stage='train', crop_size=321, scales=[0.5, 0.75, 1.0, 1.25, 1.5], mean_bgr=[122.675, 116.669, 104.008],)
+    root_dir = '/home/rlx/VOCdevkit/VOC2012'
+    txt_file = '/home/rlx/deeplab-pytorch/dataset/voc/train.txt'
+    voc12dataset = VOCSegmentationDataset(root_dir, txt_dir = 'dataset/voc', stage='train', crop_size=321, scales=[0.5, 0.75, 1.0, 1.25, 1.5], mean_bgr=[104.008, 116.669, 122.675],)
     loader = DataLoader(voc12dataset, batch_size=4, shuffle=True, num_workers=4)
     for i, batch in tqdm(enumerate(loader),total=len(loader)):
         print(i)
