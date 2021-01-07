@@ -51,7 +51,8 @@ The ```root_dir``` in the ```.yaml``` files under directory ```config``` should 
   - [x] crf
 - [ ] [DeepLabV2-ResNet101](#DeepLabV2)
   - [x] train
-  - [ ] test
+  - [x] test
+  - [x] crf
 - [ ] [DeepLabV3](#DeepLabV3)
 - [ ] [DeepLabV3+](#DeepLabV3+)
 
@@ -134,6 +135,45 @@ The evaulation results are reported in the table below. *``` Random up-down flip
 
 ## DeepLabV2
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs**](https://arxiv.org/abs/1606.00915), *IEEE TPAMI 2017*.
+
+<table>
+<thead>
+  <tr>
+    <th>Train set</th>
+    <th>Val set</th>
+    <th>CRF</th>
+    <th>Method</th>
+    <th>Pixel Accuracy</th>
+    <th>Mean IoU</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="4">trainaug</td>
+    <td rowspan="4">val</td>
+    <td rowspan="2">&#10008;</td>
+    <td>DeepLabv2</td>
+    <td>-</td>
+    <td>76.35</td>
+  </tr>
+  <tr>
+    <td>Ours</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td rowspan="2">&#10004;</td>
+    <td>DeepLabv2</td>
+    <td>-</td>
+    <td>77.69</td>
+  </tr>
+  <tr>
+    <td>Ours</td>
+    <td></td>
+    <td></td>
+  </tr>
+</tbody>
+</table>
 
 ## DeepLabV3
 
