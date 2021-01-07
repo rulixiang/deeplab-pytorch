@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 expansion = 4
 
@@ -99,8 +100,8 @@ class ASPP(nn.Module):
         for m in self.modules():
             #print(m)
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                nn.init.constant_(m.bias, 0.0)
+                nn.init.normal_(m.weight, mean=0, std=0.01)
+                nn.init.constant_(m.bias, 0)
         return None
     def forward(self, x):
         return sum([stage(x) for stage in self.children()])
@@ -125,9 +126,37 @@ class DeepLabV2_ResNet101(nn.Sequential):
             if isinstance(m, nn.BatchNorm2d):
                 m.eval()
 
+class DeepLabV2_ResNet101_MSC(nn.Module):
+    def __init__(self, n_classes, n_blocks, atrous_rates, scales=None):
+        super(DeepLabV2_ResNet101_MSC, self).__init__()
+        if scales is None:
+            self.scales = [0.5, 0.75]
+        self.base = DeepLabV2_ResNet101(n_classes=n_classes, n_blocks=n_blocks, atrous_rates=atrous_rates)
+
+    def forward(self, x):
+        x = self.base(x)
+        h, w = x.shape[2:]
+        logits = [x]
+
+        for i in self.scales:
+            x_i = F.interpolate(x, scale_factor=i, mode='bilinear', align_corners=False)
+            logits.append(x_i)
+
+        x_all = []
+        for l in logits:
+            _temp = F.interpolate(l, size=(h, w), mode='bilinear', align_corners=False)
+            x_all.append(_temp)
+
+        x_max = torch.max(torch.stack(x_all), dim=0)[0]
+
+        if self.training:
+            return logits + [x_max]
+        else:
+            return x_max
+
 if __name__ == "__main__":
     #dd = ASPP(2,2,[1,2,3])
-    model = DeepLabV2_ResNet101(n_classes=21, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
+    model = DeepLabV2_ResNet101_MSC(n_classes=21, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
     model.eval()
     image = torch.randn(1, 3, 513, 513)
 
