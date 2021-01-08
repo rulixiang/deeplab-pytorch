@@ -17,11 +17,15 @@ dataset:
   ignore_label: 255
   mean_bgr: [104.008, 116.669, 122.675]
 
+model:
+  scales: [0.5, 0.75]
+  blocks: [3, 4, 23, 3]
+  atrous_rates: [6, 12, 18, 24]
+
 train:
   split: train_aug
-  batch_size: 10 # 20 for step scheduler
-  max_iters: 20000 # 6000 for step scheduler
-  update_iters: 2
+  batch_size: 10
+  max_iters: 20000
   save_iters: 100
   num_workers: 4
   scales: [0.5, 0.75, 1.0, 1.25, 1.5]

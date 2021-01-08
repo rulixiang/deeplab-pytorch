@@ -6,7 +6,7 @@ from datetime import datetime
 
 TIMESTAMP = "{0:%Y-%m-%d-%H-%M-%S/}".format(datetime.now())
 parser = argparse.ArgumentParser()
-parser.add_argument("--gpu", default='2,1,0', type=str, help="gpu")
+parser.add_argument("--gpu", default='2', type=str, help="gpu")
 parser.add_argument("--config", default='./config/deeplabv2_voc12.yaml', type=str, help="config")
 args = parser.parse_args()
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -123,7 +123,7 @@ def train(config=None):
         device = torch.device('cpu')
 
     # build and initialize model
-    model = DeepLabV2_ResNet101.DeepLabV2_ResNet101_MSC(n_classes=config.dataset.n_classes, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
+    model = DeepLabV2_ResNet101.DeepLabV2_ResNet101_MSC(n_classes=config.dataset.n_classes, n_blocks=config.model.blocks, atrous_rates=config.model.atrous_rates, scales=config.model.scales)
 
     # save model to tensorboard 
     writer_path = os.path.join(config.exp.path, config.exp.tensorboard_dir, TIMESTAMP)
@@ -216,7 +216,7 @@ def train(config=None):
             # resize labels
             resized_labels = resize_labels(labels, size=out.shape[2:])
             resized_labels = resized_labels.to(device)
-            loss += criterion(out, resized_labels) / 4
+            loss += criterion(out, resized_labels) / len(outputs)
             #resized_labels = F.interpolate(input=labels.unsqueeze(1), size=[41, 41], mode='nearest')
             
         loss.backward()
@@ -227,10 +227,10 @@ def train(config=None):
         iteration += 1
         ## poly scheduler
             
-        if iteration % config.train.update_iters == 0:
-            for group in optimizer.param_groups:
-                #g.setdefault('initial_lr', g['lr'])
-                group['lr'] = group['initial_lr']*(1 - float(iteration) / config.train.max_iters) ** config.train.opt.power
+        #if iteration % config.train.update_iters == 0:
+        for group in optimizer.param_groups:
+            #g.setdefault('initial_lr', g['lr'])
+            group['lr'] = group['initial_lr']*(1 - float(iteration) / config.train.max_iters) ** config.train.opt.power
             
         if iteration % config.train.save_iters == 0:
                     

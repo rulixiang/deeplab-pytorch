@@ -56,7 +56,7 @@ def test(config=None):
         print('Using CPU:')
         device = torch.device('cpu')
 
-    model = DeepLabV2_ResNet101.DeepLabV2_ResNet101_MSC(n_classes=config.dataset.n_classes, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
+    model = DeepLabV2_ResNet101.DeepLabV2_ResNet101_MSC(n_classes=config.dataset.n_classes, n_blocks=config.model.blocks, atrous_rates=config.model.atrous_rates, scales=config.model.scales)
     model = nn.DataParallel(model)
 
     checkpoint_path = os.path.join(config.exp.path, config.exp.checkpoint_dir, config.exp.final_weights)

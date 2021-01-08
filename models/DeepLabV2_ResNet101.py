@@ -131,10 +131,11 @@ class DeepLabV2_ResNet101_MSC(nn.Module):
         super(DeepLabV2_ResNet101_MSC, self).__init__()
         if scales is None:
             self.scales = [0.5, 0.75]
+        else:
+            self.scales = scales
         self.base = DeepLabV2_ResNet101(n_classes=n_classes, n_blocks=n_blocks, atrous_rates=atrous_rates)
 
-    def forward(self, x):
-        x = self.base(x)
+    def _pyramid(self, x):
         h, w = x.shape[2:]
         logits = [x]
 
@@ -154,6 +155,10 @@ class DeepLabV2_ResNet101_MSC(nn.Module):
         else:
             return x_max
 
+    def forward(self, x):
+        x = self.base(x)
+        return self._pyramid(x)
+        
 if __name__ == "__main__":
     #dd = ASPP(2,2,[1,2,3])
     model = DeepLabV2_ResNet101_MSC(n_classes=21, n_blocks=[3, 4, 23, 3], atrous_rates=[6, 12, 18, 24])
