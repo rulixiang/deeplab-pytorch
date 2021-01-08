@@ -5,12 +5,14 @@ from PIL import Image
 #from scipy import misc
 import torch
 import torchvision
+import cv2
 
 def random_scaling(image, mask, scales=None):
     scale = random.choice(scales)
     h, w, = mask.shape
     new_scale = [int(scale * w), int(scale * h)]
-    new_image = Image.fromarray(image.astype(np.uint8)).resize(new_scale, resample=Image.BILINEAR)
+    #new_image = Image.fromarray(image.astype(np.uint8)).resize(new_scale, resample=Image.BILINEAR)
+    new_image = cv2.resize(image.astype(np.uint8), new_scale, interpolation=cv2.INTER_LINEAR)
     new_mask = Image.fromarray(mask).resize(new_scale, resample=Image.NEAREST)
     new_image = np.asarray(new_image).astype(np.float32)
     new_mask = np.asarray(new_mask)
@@ -47,6 +49,7 @@ def random_crop(image, mask, crop_size, mean_bgr):
     W = max(crop_size, w)
     pad_image = np.zeros((H,W,3), dtype=np.float32)
     pad_mask = np.ones((H,W), dtype=np.float32)*255
+    
     pad_image[:,:,0] = mean_bgr[0]
     pad_image[:,:,1] = mean_bgr[1]
     pad_image[:,:,2] = mean_bgr[2]
