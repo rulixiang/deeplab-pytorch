@@ -1,11 +1,11 @@
-torchvision==0.8.2
 pydensecrf==1.0rc3
 opencv_python==4.4.0.46
-tqdm==4.46.1
 scipy==1.1.0
-torch==1.7.1
-matplotlib==3.3.3
+tqdm==4.46.1
 numpy==1.18.5
-joblib==1.0.0
+torch==1.7.1
+torchvision==0.8.2
 omegaconf==2.0.0
+joblib==1.0.0
+matplotlib==3.3.3
 Pillow==8.1.0
