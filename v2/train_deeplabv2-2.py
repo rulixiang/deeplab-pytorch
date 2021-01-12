@@ -35,7 +35,7 @@ def makedirs(path):
         os.makedirs(path)
     return True
 
-def resize_labels(labels, size):
+def imresize(labels, size):
 
     new_labels = []
     for label in labels:
@@ -196,34 +196,34 @@ def train(config=None):
         #for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
         running_loss = 0.0
         #print('Training epoch %d / %d ...'%(epoch, max_epoch))
-        
+
+        #for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
+        # zero the parameter gradients
+        optimizer.zero_grad()
+        #_, inputs, labels = data
         try:
             _, inputs, labels = next(train_loader_iter)
         except:
             train_loader_iter = iter(train_loader)
             _, inputs, labels = next(train_loader_iter)
-
-        #for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
-        # zero the parameter gradients
-        optimizer.zero_grad()
-
-        #_, inputs, labels = data
         inputs =  inputs.to(device)
         outputs = model(inputs)
             
         loss = 0.0
         for out in outputs:
             # resize labels
-            resized_labels = resize_labels(labels, size=out.shape[2:])
+            resized_labels = imresize(labels, size=out.shape[2:])
             resized_labels = resized_labels.to(device)
             loss += criterion(out, resized_labels) / len(outputs)
             #resized_labels = F.interpolate(input=labels.unsqueeze(1), size=[41, 41], mode='nearest')
             
         loss.backward()
+        
         optimizer.step()
     
         #running_loss += loss.item()
-
+        
+        # scheduler step
         iteration += 1
         ## poly scheduler
             
