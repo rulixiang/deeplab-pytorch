@@ -173,14 +173,6 @@ def train(config=None):
         momentum=config.train.opt.momentum,
     )
 
-        # Learning rate scheduler
-    scheduler = PolynomialLR(
-        optimizer=optimizer,
-        step_size=10,
-        iter_max=2000,
-        power=0.9,
-    )
-
     # criterion
     criterion = nn.CrossEntropyLoss(ignore_index=config.dataset.ignore_label)
     criterion = criterion.to(device)

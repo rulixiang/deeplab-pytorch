@@ -60,7 +60,7 @@ The `root_dir` in the `.yaml` files under directory `config` should also be upda
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs**](https://arxiv.org/abs/1412.7062), *ICLR 2015*. 
 ### Train and Test
 Before training, you need to download an initial model from [this link](https://github.com/wangleihitcs/DeepLab-V1-PyTorch/blob/master/data/deeplab_largeFOV.pth) and move it to `weights` directory.
-To train and test a DeepLabV1-LargeFOV network, you need at least one gpu device.
+To train and test a DeepLabV1-LargeFOV network, you need at least `1` gpu device.
 
 ``` bash
 ## train
@@ -142,13 +142,13 @@ Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin
 
 ### Train and Test
 Before training, you need to download the initial weights pre-trained on COCO dataset from [this link]() and move it to `weights` directory.
-To train and test a DeepLabV2-ResNet101 network, you need at least `2` gpu device.
+To train and test a DeepLabV2-ResNet101 network, you need at least `3` gpu device with `11GB` memory.
 
 ``` bash
 ## train
-python v1/train_deeplabv2.py --gpu 0,1 --config config/deeplabv2_voc12.yaml
+python v2/train_deeplabv2.py --gpu 0,1 --config config/deeplabv2_voc12.yaml
 ## test on trained model
-python v1/test_deeplabv2.py --gpu 0 --config config/deeplabv2_voc12.yaml --crf True
+python v2/test_deeplabv2.py --gpu 0 --config config/deeplabv2_voc12.yaml --crf True
 ```
 Or just run the shell script:
 ``` bash
