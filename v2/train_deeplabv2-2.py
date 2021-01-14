@@ -29,7 +29,6 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from utils import imutils, pyutils
 
-
 def makedirs(path):
     if os.path.exists(path) is False:
         os.makedirs(path)
@@ -174,6 +173,14 @@ def train(config=None):
         momentum=config.train.opt.momentum,
     )
 
+        # Learning rate scheduler
+    scheduler = PolynomialLR(
+        optimizer=optimizer,
+        step_size=10,
+        iter_max=2000,
+        power=0.9,
+    )
+
     # criterion
     criterion = nn.CrossEntropyLoss(ignore_index=config.dataset.ignore_label)
     criterion = criterion.to(device)
@@ -227,11 +234,11 @@ def train(config=None):
         iteration += 1
         ## poly scheduler
             
-        #if iteration % config.train.update_iters == 0:
-        for group in optimizer.param_groups:
-            #g.setdefault('initial_lr', g['lr'])
-            group['lr'] = group['initial_lr']*(1 - float(iteration) / config.train.max_iters) ** config.train.opt.power
-            
+        if iteration % config.train.update_iters == 0:
+            for group in optimizer.param_groups:
+                #g.setdefault('initial_lr', g['lr'])
+                group['lr'] = group['initial_lr']*(1 - float(iteration) / config.train.max_iters) ** config.train.opt.power
+        
         if iteration % config.train.save_iters == 0:
                     
             # save to tensorboard

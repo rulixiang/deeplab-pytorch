@@ -26,6 +26,7 @@ train:
   split: train_aug
   batch_size: 10
   max_iters: 20000
+  update_iters: 10
   save_iters: 100
   num_workers: 4
   scales: [0.5, 0.75, 1.0, 1.25, 1.5]
