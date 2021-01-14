@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/Language-Python-blue.svg)
 
-Pytorch implementation of DeepLab series, including DeepLabV1-LargeFOV, DeepLabV2, DeepLabV3, and DeepLabV3+. The experiments are all conducted on PASCAL VOC 2012 dataset.
+Pytorch implementation of DeepLab series, including DeepLabV1-LargeFOV, DeepLabV2-ResNet101, DeepLabV3, and DeepLabV3+. The experiments are all conducted on PASCAL VOC 2012 dataset.
 
 ## Setup
 
@@ -30,7 +30,7 @@ tar –xvf VOCtrainval_11-May-2012.tar
 ```
 ### Download the augmented annotations
 The augmented annotations are from [SBD dataset](http://home.bharathh.info/pubs/codes/SBD/download.html). Here is a download link of the augmented annotations at
-[DropBox](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0). After downloading ``` SegmentationClassAug.zip ```, you should unzip it and move it to ```VOCdevkit/VOC2012```. The directory sctructure should thus be 
+[DropBox](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0). After downloading ` SegmentationClassAug.zip `, you should unzip it and move it to `VOCdevkit/VOC2012`. The directory sctructure should thus be 
 
 ``` bash
 ./VOCdevkit/
@@ -42,7 +42,7 @@ The augmented annotations are from [SBD dataset](http://home.bharathh.info/pubs/
     ├── SegmentationClassAug
     └── SegmentationObject
 ```
-The ```root_dir``` in the ```.yaml``` files under directory ```config``` should also be updated as your directory.
+The `root_dir` in the `.yaml` files under directory `config` should also be updated as your directory.
 
 ## Work List
 - [x] [DeepLabV1-LargeFOV](#DeepLabV1)
@@ -59,7 +59,7 @@ The ```root_dir``` in the ```.yaml``` files under directory ```config``` should 
 ## DeepLabV1
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs**](https://arxiv.org/abs/1412.7062), *ICLR 2015*. 
 ### Train and Test
-Before training, you need to download an initial model from [this link](https://github.com/wangleihitcs/DeepLab-V1-PyTorch/blob/master/data/deeplab_largeFOV.pth) and move it to ```weights``` directory.
+Before training, you need to download an initial model from [this link](https://github.com/wangleihitcs/DeepLab-V1-PyTorch/blob/master/data/deeplab_largeFOV.pth) and move it to `weights` directory.
 To train and test a DeepLabV1-LargeFOV network, you need at least one gpu device.
 
 ``` bash
@@ -68,8 +68,12 @@ python v1/train_deeplabv1.py --gpu 0,1 --config config/deeplabv1_voc12.yaml
 ## test on trained model
 python v1/test_deeplabv1.py --gpu 0 --config config/deeplabv1_voc12.yaml --crf True
 ```
+Or just run the shell script:
+``` bash
+bash run_deeplabv1.sh
+```
 ### Results
-The evaulation results are reported in the table below. *``` Random up-down flip ``` and ``` Random rotation ``` cannot improve the performance*.
+The evaulation results are reported in the table below. *` Random up-down flip ` and ` Random rotation ` cannot improve the performance*.
 
 <table>
 <thead>
@@ -130,11 +134,28 @@ The evaulation results are reported in the table below. *``` Random up-down flip
 </tbody>
 </table>
 
-*```step``` means the original learning rate decay policy in deeplabv1*,
-*```poly``` means the polynomial learning rate decay policy in deeplabv2*.
+*`step` means the original learning rate decay policy in deeplabv1*,
+*`poly` means the polynomial learning rate decay policy in deeplabv2*.
 
 ## DeepLabV2
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs**](https://arxiv.org/abs/1606.00915), *IEEE TPAMI 2017*.
+
+### Train and Test
+Before training, you need to download the initial weights pre-trained on COCO dataset from [this link]() and move it to `weights` directory.
+To train and test a DeepLabV2-ResNet101 network, you need at least `2` gpu device.
+
+``` bash
+## train
+python v1/train_deeplabv2.py --gpu 0,1 --config config/deeplabv2_voc12.yaml
+## test on trained model
+python v1/test_deeplabv2.py --gpu 0 --config config/deeplabv2_voc12.yaml --crf True
+```
+Or just run the shell script:
+``` bash
+bash run_deeplabv2.sh
+```
+
+### Results
 
 <table>
 <thead>
