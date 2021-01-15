@@ -44,12 +44,12 @@ The augmented annotations are from [SBD dataset](http://home.bharathh.info/pubs/
 ```
 The `root_dir` in the `.yaml` files under directory `config` should also be updated as your directory.
 
-## Work List
+## Todo List
 - [x] [DeepLabV1-LargeFOV](#DeepLabV1)
   - [x] train
   - [x] test
   - [x] crf
-- [ ] [DeepLabV2-ResNet101](#DeepLabV2)
+- [x] [DeepLabV2-ResNet101](#DeepLabV2)
   - [x] train
   - [x] test
   - [x] crf
