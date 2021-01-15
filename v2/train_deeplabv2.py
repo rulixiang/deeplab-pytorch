@@ -6,7 +6,7 @@ from datetime import datetime
 
 TIMESTAMP = "{0:%Y-%m-%d-%H-%M-%S/}".format(datetime.now())
 parser = argparse.ArgumentParser()
-parser.add_argument("--gpu", default='2,1,0', type=str, help="gpu")
+parser.add_argument("--gpu", default='2', type=str, help="gpu")
 parser.add_argument("--config", default='./config/deeplabv2_voc12.yaml', type=str, help="config")
 args = parser.parse_args()
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -29,13 +29,12 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from utils import imutils, pyutils
 
-
 def makedirs(path):
     if os.path.exists(path) is False:
         os.makedirs(path)
     return True
 
-def resize_labels(labels, size):
+def imresize(labels, size):
 
     new_labels = []
     for label in labels:
@@ -72,6 +71,8 @@ def get_params(model, key):
 def validate(model=None, criterion=None, data_loader=None, writer=None):
 
     print('Validating...')
+
+    n_gpus = torch.cuda.device_count()
 
     val_loss = 0.0
     preds, gts = [], []
@@ -185,75 +186,83 @@ def train(config=None):
     iteration = 0
     max_epoch = config.train.max_iters // len(train_loader) + 1
 
-    for epoch in range(max_epoch):
+    model.train()
+    model.module.base.freeze_bn()
+
+    train_loader_iter = iter(train_loader)
+
+    for epoch in tqdm(range(config.train.max_iters), total=config.train.max_iters, ascii=' 123456789>', dynamic_ncols=True):
+        #for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
         running_loss = 0.0
-        print('Training epoch %d / %d ...'%(epoch, max_epoch))
+        #print('Training epoch %d / %d ...'%(epoch, max_epoch))
 
-        model.train()
-        model.module.base.freeze_bn()
-
-        for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
-            _, inputs, labels = data
-            inputs =  inputs.to(device)
-            outputs = model(inputs)
+        #for _, data in tqdm(enumerate(train_loader), total=len(train_loader), ascii=' 123456789>', dynamic_ncols=True):
+        # zero the parameter gradients
+        optimizer.zero_grad()
+        #_, inputs, labels = data
+        try:
+            _, inputs, labels = next(train_loader_iter)
+        except:
+            train_loader_iter = iter(train_loader)
+            _, inputs, labels = next(train_loader_iter)
+        inputs =  inputs.to(device)
+        outputs = model(inputs)
             
-            loss = 0.0
-            for out in outputs:
-                # resize labels
-                resized_labels = resize_labels(labels, size=out.shape[2:])
-                resized_labels = resized_labels.to(device)
-                loss += criterion(out, resized_labels)
-                #resized_labels = F.interpolate(input=labels.unsqueeze(1), size=[41, 41], mode='nearest')
+        loss = 0.0
+        for out in outputs:
+            # resize labels
+            resized_labels = imresize(labels, size=out.shape[2:])
+            resized_labels = resized_labels.to(device)
+            loss += criterion(out, resized_labels) / len(outputs)
+            #resized_labels = F.interpolate(input=labels.unsqueeze(1), size=[41, 41], mode='nearest')
             
-            loss.backward()
-            optimizer.step()
+        loss.backward()
+        
+        optimizer.step()
     
-            running_loss += loss.item()
-
-            iteration += 1
-            ## poly scheduler
-
+        #running_loss += loss.item()
+        
+        # scheduler step
+        iteration += 1
+        ## poly scheduler
+            
+        if iteration % config.train.update_iters == 0:
             for group in optimizer.param_groups:
                 #g.setdefault('initial_lr', g['lr'])
                 group['lr'] = group['initial_lr']*(1 - float(iteration) / config.train.max_iters) ** config.train.opt.power
-            
-            ## step scheduler
-            '''
-            if iteration % config.train.update_iters == 0:
-                for group in optimizer.param_groups:
-                    group['lr'] = group['lr'] * 0.1
-            '''
-            if iteration == config.train.max_iters:
-                dst_path = os.path.join(config.exp.path, config.exp.checkpoint_dir, config.exp.final_weights)
-                #val_loss, score = validate(model=model, criterion=criterion, data_loader=val_loader)
-                #print('val loss: %f, val pixel accuracy: %f, val mIoU: %f\n'%(val_loss, score['Pixel Accuracy'], score['Mean IoU']))
-                torch.save(model.state_dict(), dst_path)
-                torch.cuda.empty_cache()
-                return True
+        
+        if iteration % config.train.save_iters == 0:
                     
-        # save to tensorboard
-        temp_k = 4
-        inputs_part = inputs[0:temp_k,:]
-        resized_outputs = F.interpolate(outputs[-1], size=inputs.shape[2:], mode='bilinear', align_corners=True)
-        outputs_part = resized_outputs[0:temp_k,:]
-        labels_part = labels[0:temp_k,:]
+            # save to tensorboard
+            temp_k = 4
+            inputs_part = inputs[0:temp_k,:]
+            resized_outputs = F.interpolate(outputs[-1], size=inputs.shape[2:], mode='bilinear', align_corners=True)
+            outputs_part = resized_outputs[0:temp_k,:]
+            labels_part = labels[0:temp_k,:]
 
-        grid_inputs, grid_outputs, grid_labels = imutils.tensorboard_image(inputs=inputs_part, outputs=outputs_part, labels=labels_part, bgr=config.dataset.mean_bgr)
+            grid_inputs, grid_outputs, grid_labels = imutils.tensorboard_image(inputs=inputs_part, outputs=outputs_part, labels=labels_part, bgr=config.dataset.mean_bgr)
 
-        writer.add_image("train/images", grid_inputs, global_step=epoch)
-        writer.add_image("train/preds", grid_outputs, global_step=epoch)
-        writer.add_image("train/labels", grid_labels, global_step=epoch)
+            writer.add_image("train/images", grid_inputs, global_step=iteration)
+            writer.add_image("train/preds", grid_outputs, global_step=iteration)
+            writer.add_image("train/labels", grid_labels, global_step=iteration)
+            writer.add_scalars("loss", {'train':loss}, global_step=iteration)
 
-        train_loss = running_loss / len(train_loader)
-        val_loss, score = validate(model=model, criterion=criterion, data_loader=val_loader, writer=None)
-        print('train loss: %f, val loss: %f, val pixel accuracy: %f, val mIoU: %f\n'%(train_loss, val_loss, score['Pixel Accuracy'], score['Mean IoU']))
+            #train_loss = running_loss / len(train_loader)
+            #val_loss, score = validate(model=model, criterion=criterion, data_loader=val_loader, writer=None)
+            #print('train loss: %f, val loss: %f, val pixel accuracy: %f, val mIoU: %f\n'%(train_loss, val_loss, score['Pixel Accuracy'], score['Mean IoU']))
 
-        writer.add_scalars("loss", {'train':train_loss, 'val':val_loss}, global_step=epoch)
-        writer.add_scalar("val/acc", scalar_value=score['Pixel Accuracy'], global_step=epoch)
-        writer.add_scalar("val/miou", scalar_value=score['Mean IoU'], global_step=epoch)
+            #writer.add_scalars("loss", {'train':train_loss}, global_step=epoch)
+            #writer.add_scalar("val/acc", scalar_value=score['Pixel Accuracy'], global_step=epoch)
+            #writer.add_scalar("val/miou", scalar_value=score['Mean IoU'], global_step=epoch)
+
+    val_loss, score = validate(model=model, criterion=criterion, data_loader=val_loader, writer=None)
+    print('val loss: %f, val pixel accuracy: %f, val mIoU: %f\n'%(val_loss, score['Pixel Accuracy'], score['Mean IoU']))
+
+    dst_path = os.path.join(config.exp.path, config.exp.checkpoint_dir, config.exp.final_weights)
+    #val_loss, score = validate(model=model, criterion=criterion, data_loader=val_loader)
+    #print('val loss: %f, val pixel accuracy: %f, val mIoU: %f\n'%(val_loss, score['Pixel Accuracy'], score['Mean IoU']))
+    torch.save(model.state_dict(), dst_path)
+    torch.cuda.empty_cache()
 
     return True
 
