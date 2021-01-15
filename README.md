@@ -45,16 +45,16 @@ The augmented annotations are from [SBD dataset](http://home.bharathh.info/pubs/
 The `root_dir` in the `.yaml` files under directory `config` should also be updated as your directory.
 
 ## Todo List
-- [x] [DeepLabV1-LargeFOV](#DeepLabV1)
-  - [x] train
-  - [x] test
-  - [x] crf
-- [x] [DeepLabV2-ResNet101](#DeepLabV2)
-  - [x] train
-  - [x] test
-  - [x] crf
-- [ ] [DeepLabV3](#DeepLabV3)
-- [ ] [DeepLabV3+](#DeepLabV3+)
+- [&#10003;] [DeepLabV1-LargeFOV](#DeepLabV1)
+  - [&#10003;] train
+  - [&#10003;] test
+  - [&#10003;] crf
+- [&#10003;] [DeepLabV2-ResNet101](#DeepLabV2)
+  - [&#10003;] train
+  - [&#10003;] test
+  - [&#10003;] crf 
+- [&#10007;] [DeepLabV3](#DeepLabV3)
+- [&#10007;] [DeepLabV3+](#DeepLabV3+)
 
 ## DeepLabV1
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs**](https://arxiv.org/abs/1412.7062), *ICLR 2015*. 
@@ -111,7 +111,7 @@ The evaulation results are reported in the table below. *` Random up-down flip `
     <td>65.31</td>
   </tr>
   <tr>
-    <td rowspan="4">&#10004;</td>
+    <td rowspan="4">&#10003;</td>
     <td>DeepLabv1-step</td>
     <td>-</td>
     <td>67.64</td>
@@ -183,7 +183,7 @@ bash run_deeplabv2.sh
     <td>76.71</td>
   </tr>
   <tr>
-    <td rowspan="2">&#10004;</td>
+    <td rowspan="2">&#10003;</td>
     <td>DeepLabv2</td>
     <td>-</td>
     <td>77.69</td>
