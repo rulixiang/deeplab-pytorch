@@ -122,7 +122,7 @@ def crf_proc(config):
         iter_max=10,    # 10
         pos_xy_std=3,   # 3
         pos_w=3,        # 3
-        bi_xy_std=140,  # 121, 140
+        bi_xy_std=50,  # 121, 140
         bi_rgb_std=5,   # 5, 5
         bi_w=5,         # 4, 5
     )

@@ -108,7 +108,7 @@ The evaulation results are reported in the table below. *` Random up-down flip `
   <tr>
     <td>Ours-poly</td>
     <td>91.31</td>
-    <td>65.31</td>
+    <td>65.48</td>
   </tr>
   <tr>
     <td rowspan="4">&#10003;</td>
@@ -128,8 +128,8 @@ The evaulation results are reported in the table below. *` Random up-down flip `
   </tr>
   <tr>
     <td>Ours-poly</td>
-    <td>92.81</td>
-    <td>69.11</td>
+    <td>92.74</td>
+    <td>69.38</td>
   </tr>
 </tbody>
 </table>
