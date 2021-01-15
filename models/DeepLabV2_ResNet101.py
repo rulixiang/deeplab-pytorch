@@ -136,18 +136,21 @@ class DeepLabV2_ResNet101_MSC(nn.Module):
         self.base = DeepLabV2_ResNet101(n_classes=n_classes, n_blocks=n_blocks, atrous_rates=atrous_rates)
 
     def _pyramid(self, x):
-        h, w = x.shape[2:]
+        #h, w = x.shape[2:]
         x_scales = []
-
+        logits = [self.base(x)]
+        h, w = logits[0].shape[2:]
         for i in self.scales:
             x_i = F.interpolate(x, scale_factor=i, mode='bilinear', align_corners=False)
-            x_scales.append(x_i)
-
+            l_i = self.base(x_i)
+            l_i = F.interpolate(l_i, size=(h, w), mode='bilinear', align_corners=False)
+            logits.append(l_i)
+        '''
         logits = [self.base(x)]
         for l in x_scales:
             _temp = F.interpolate(l, size=(h, w), mode='bilinear', align_corners=False)
             logits.append(self.base(_temp))
-
+        '''
         x_max = torch.max(torch.stack(logits), dim=0)[0]
 
         if self.training:

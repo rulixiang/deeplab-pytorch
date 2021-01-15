@@ -78,7 +78,7 @@ def test(config=None):
             outputs = model(inputs)
             labels = labels.long().to(outputs.device)
 
-            resized_outputs = F.interpolate(outputs, size=inputs.shape[2:], mode='bilinear', align_corners=True)
+            resized_outputs = F.interpolate(outputs, size=inputs.shape[2:], mode='bilinear', align_corners=False)
 
             pred = torch.argmax(resized_outputs, dim=1).cpu().numpy().astype(np.uint8)
             label = labels.cpu().numpy().astype(np.uint8)

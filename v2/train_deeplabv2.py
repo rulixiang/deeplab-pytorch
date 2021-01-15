@@ -87,7 +87,7 @@ def validate(model=None, criterion=None, data_loader=None, writer=None):
             outputs = model(inputs)
             labels = labels.long().to(outputs.device)
 
-            resized_outputs = F.interpolate(outputs, size=inputs.shape[2:], mode='bilinear', align_corners=True)
+            resized_outputs = F.interpolate(outputs, size=inputs.shape[2:], mode='bilinear', align_corners=False)
 
             loss = criterion(resized_outputs, labels)
             val_loss += loss
