@@ -120,11 +120,11 @@ def crf_proc(config):
 
     post_processor = crf.DenseCRF(
         iter_max=10,    # 10
-        pos_xy_std=3,   # 3
+        pos_xy_std=1,   # 3
         pos_w=3,        # 3
-        bi_xy_std=140,  # 121, 140
-        bi_rgb_std=5,   # 5, 5
-        bi_w=5,         # 4, 5
+        bi_xy_std=67,  # 121, 140
+        bi_rgb_std=3,   # 5, 5
+        bi_w=4,         # 4, 5
     )
 
     def _job(i):
