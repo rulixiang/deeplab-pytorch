@@ -179,8 +179,8 @@ bash run_deeplabv2.sh
   </tr>
   <tr>
     <td>Ours</td>
-    <td></td>
-    <td></td>
+    <td>94.61</td>
+    <td>76.71</td>
   </tr>
   <tr>
     <td rowspan="2">&#10004;</td>
@@ -190,8 +190,8 @@ bash run_deeplabv2.sh
   </tr>
   <tr>
     <td>Ours</td>
-    <td></td>
-    <td></td>
+    <td>94.99</td>
+    <td>77.96</td>
   </tr>
 </tbody>
 </table>
