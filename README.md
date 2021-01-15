@@ -90,7 +90,7 @@ The evaulation results are reported in the table below. *` Random up-down flip `
   <tr>
     <td rowspan="8">trainaug</td>
     <td rowspan="8">val</td>
-    <td rowspan="4">&#10008;</td>
+    <td rowspan="4">&#10007;</td>
     <td>DeepLabv1-step</td>
     <td>-</td>
     <td>62.25</td>
@@ -141,7 +141,7 @@ The evaulation results are reported in the table below. *` Random up-down flip `
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs**](https://arxiv.org/abs/1606.00915), *IEEE TPAMI 2017*.
 
 ### Train and Test
-Before training, you need to download the initial weights pre-trained on COCO dataset from [this link]() and move it to `weights` directory.
+Before training, you need to download the initial weights pre-trained on [COCO dataset](https://cocodataset.org/) from [this link]() and move it to `weights` directory.
 To train and test a DeepLabV2-ResNet101 network, you need at least `3` gpu device with `11GB` memory.
 
 ``` bash
@@ -172,7 +172,7 @@ bash run_deeplabv2.sh
   <tr>
     <td rowspan="4">trainaug</td>
     <td rowspan="4">val</td>
-    <td rowspan="2">&#10008;</td>
+    <td rowspan="2">&#10007;</td>
     <td>DeepLabv2</td>
     <td>-</td>
     <td>76.35</td>
