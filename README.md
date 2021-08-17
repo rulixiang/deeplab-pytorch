@@ -141,7 +141,7 @@ The evaulation results are reported in the table below. *` Random up-down flip `
 Chen, Liang-Chieh and Papandreou, George and Kokkinos, Iasonas and Murphy, Kevin and Yuille, Alan L, [**Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs**](https://arxiv.org/abs/1606.00915), *IEEE TPAMI 2017*.
 
 ### Train and Test
-Before training, you need to download the initial weights pre-trained on [COCO dataset](https://cocodataset.org/) from [this link]() and move it to `weights` directory.
+Before training, you need to download the initial weights pre-trained on [COCO dataset](https://cocodataset.org/) from [this link](https://drive.google.com/file/d/1IRLbL0DwZkmqlWhQKEdKzr3P23gb-lOV/view?usp=sharing) and move it to `weights` directory.
 To train and test a DeepLabV2-ResNet101 network, you need at least `3` gpu device with `11GB` memory.
 
 ``` bash
